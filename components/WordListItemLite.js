@@ -1,4 +1,3 @@
-import { Feather } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
 import { useState } from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -69,7 +68,7 @@ export default function WordListItem({
     }
   };
 
-  const tickColor = wordStage >= 2 ? '#00FF00' : 'gray';
+  // const tickColor = wordStage >= 2 ? '#00FF00' : 'gray';
 
   return (
     <View style={styles.item}>
@@ -85,10 +84,12 @@ export default function WordListItem({
         </TouchableOpacity>
       </View>
 
-      {/* Tick */}
+      {/* Tick temporarily removed */}
+      {/*
       <TouchableOpacity onPress={handleToggleStage} style={styles.tickButton}>
         <Feather name="check-circle" size={26} color={tickColor} />
       </TouchableOpacity>
+      */}
     </View>
   );
 }
@@ -109,7 +110,7 @@ const styles = StyleSheet.create({
   },
   english: {
     fontSize: 18,
-     color: '#FFFFFF', // white
+    color: '#FFFFFF',
     fontWeight: '600',
   },
   japaneseZone: {

@@ -1,17 +1,16 @@
-// App.js — Tab labels changed to Level 1–4, audio stays active in background
-import { Entypo, Feather, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+// App.js — Bottom tabs disabled, only ExploreStack shown
+
 import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Audio } from 'expo-av';
 import { useEffect } from 'react';
 
+// Screens
 import ExploreStack from './screens/ExploreStack';
-import FindStack from './screens/FindStack';
-import PracticeListenScreen from './screens/PracticeListenScreen';
-import PracticeSpeakScreen from './screens/PracticeSpeakScreen';
-import ReviewStack from './screens/ReviewStack'; // ✅ NEW: stack includes Review + ReviewWord
 
-const Tab = createBottomTabNavigator();
+// Use this instead of bottom tabs (tabs temporarily disabled)
+const Stack = createNativeStackNavigator();
+// const Tab = createBottomTabNavigator(); // Tabs preserved but inactive
 
 export default function App() {
   useEffect(() => {
@@ -21,8 +20,8 @@ export default function App() {
           allowsRecordingIOS: false,
           staysActiveInBackground: true,
           playsInSilentModeIOS: true,
-          interruptionModeIOS: 'doNotMix', // ✅ FIXED: use valid string enum
-          interruptionModeAndroid: 'doNotMix', // ✅ FIXED: same here
+          interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
+          interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
           shouldDuckAndroid: true,
           playThroughEarpieceAndroid: false,
         });
@@ -36,14 +35,26 @@ export default function App() {
 
   return (
     <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="ExploreStack" component={ExploreStack} />
+      </Stack.Navigator>
+
+      {/*
+      // Original bottom tab structure retained here for future use:
+
       <Tab.Navigator
         initialRouteName="Explore"
         screenOptions={{
           headerShown: false,
           tabBarActiveTintColor: '#FFD700',
           tabBarInactiveTintColor: 'gray',
-          tabBarStyle: { backgroundColor: 'black', borderTopColor: '#222' },
-          tabBarLabelStyle: { fontSize: 12 },
+          tabBarStyle: {
+            backgroundColor: 'black',
+            borderTopColor: '#222',
+          },
+          tabBarLabelStyle: {
+            fontSize: 12,
+          },
         }}
       >
         <Tab.Screen
@@ -96,6 +107,7 @@ export default function App() {
           }}
         />
       </Tab.Navigator>
+      */}
     </NavigationContainer>
   );
 }

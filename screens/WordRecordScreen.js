@@ -1,4 +1,4 @@
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Audio } from 'expo-av';
 import { StatusBar } from 'expo-status-bar';
@@ -33,12 +33,10 @@ export default function WordRecordScreenMVP() {
   const soundRef = useRef(null);
   const stage = getStage(progress, wordId);
 
-  // Load word progress
   useEffect(() => {
     loadProgress().then(setProgress);
   }, []);
 
-  // Autoplay logic
   useEffect(() => {
     let isMounted = true;
 
@@ -97,13 +95,6 @@ export default function WordRecordScreenMVP() {
     setProgress(updated);
   };
 
-  const handleAdvanceToStage1 = async () => {
-    if (stage >= 1 || !wordId) return;
-    await updateWordStage(wordId, 2); // Skip Learn, go directly to Listen
-    const updated = await loadProgress();
-    setProgress(updated);
-  };
-
   const goToPrev = () => {
     if (index > 0) {
       navigation.push('WordRecord', { words, index: index - 1, mode });
@@ -116,11 +107,19 @@ export default function WordRecordScreenMVP() {
     }
   };
 
+  const goHome = () => {
+    navigation.navigate('ExploreIndex');
+  };
+
   return (
     <View style={styles.fixedContainer}>
       <StatusBar style="light" translucent backgroundColor="transparent" />
 
       <View style={styles.topHalf}>
+        <TouchableOpacity onPress={goHome} style={styles.homeButton}>
+          <Feather name="home" size={28} color="#FFD700" />
+        </TouchableOpacity>
+
         <WordRecordLayout
           block={word}
           imageAsset={imageMap[word.image]}
@@ -131,20 +130,7 @@ export default function WordRecordScreenMVP() {
           onPlayAudio={playAudio}
           onToggleEnglish={() => setShowEnglish(!showEnglish)}
           onShowTip={() => setShowTip(true)}
-          onPressFind={() => navigation.navigate('Find', { screen: 'VoiceSearch' })}
         />
-
-        {mode === 'explore' && (
-          <TouchableOpacity style={styles.tickIconWrapper} onPress={handleAdvanceToStage1}>
-            <View style={styles.tickIconCircle}>
-              <MaterialCommunityIcons
-                name={stage >= 1 ? 'check-circle' : 'check-circle-outline'}
-                size={32}
-                color={stage >= 1 ? 'limegreen' : 'gray'}
-              />
-            </View>
-          </TouchableOpacity>
-        )}
       </View>
 
       <View style={styles.interactionBlock}>
@@ -197,16 +183,11 @@ const styles = StyleSheet.create({
     height: '58%',
     position: 'relative',
   },
-  tickIconWrapper: {
+  homeButton: {
     position: 'absolute',
-    bottom: 36,
+    top: 40,
     right: 20,
-    zIndex: 5,
-  },
-  tickIconCircle: {
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    borderRadius: 24,
-    padding: 6,
+    zIndex: 20,
   },
   interactionBlock: {
     height: '42%',

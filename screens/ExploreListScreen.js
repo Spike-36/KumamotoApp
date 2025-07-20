@@ -1,7 +1,6 @@
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  Animated,
   ScrollView,
   StyleSheet,
   Text,
@@ -12,7 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import WordListItem from '../components/WordListItemLite';
 import blocks from '../data/blocks.json';
-import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
+import { getStage, loadProgress } from '../utils/progressStorage';
 
 export default function ExploreListScreen() {
   const navigation = useNavigation();
@@ -24,7 +23,6 @@ export default function ExploreListScreen() {
   const hasScrolledToType = useRef(false);
   const [progress, setProgress] = useState({});
   const [activeSection, setActiveSection] = useState('');
-  const animRefs = useRef({});
 
   useFocusEffect(
     useCallback(() => {
@@ -89,49 +87,6 @@ export default function ExploreListScreen() {
     return () => clearTimeout(timeout);
   }, [route.params, progress]);
 
-  const refreshProgress = async () => {
-    const updated = await loadProgress();
-    setProgress(updated);
-  };
-
-  const triggerTickBounce = (title) => {
-    const anim = animRefs.current[title];
-    if (!anim) return;
-
-    Animated.sequence([
-      Animated.timing(anim, {
-        toValue: 1.3,
-        duration: 120,
-        useNativeDriver: true,
-      }),
-      Animated.spring(anim, {
-        toValue: 1,
-        friction: 3,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  };
-
-  const handleToggleSection = async (title) => {
-    triggerTickBounce(title);
-    const sectionWords = groupedBlocks[title] || [];
-
-    const isFullySelected =
-      sectionWords.length > 0 &&
-      sectionWords.every((word) => getStage(progress, word.id) >= 2);
-
-    for (const word of sectionWords) {
-      const current = getStage(progress, word.id);
-      const newStage = isFullySelected ? 0 : 2;
-
-      if (current !== newStage) {
-        await updateWordStage(word.id, newStage, true);
-      }
-    }
-
-    await refreshProgress();
-  };
-
   return (
     <SafeAreaView style={styles.safeContainer} edges={['top']}>
       <View style={styles.content}>
@@ -147,13 +102,6 @@ export default function ExploreListScreen() {
         >
           {sectionTitles.map((title) => {
             const sectionWords = groupedBlocks[title] || [];
-            const isFullySelected =
-              sectionWords.length > 0 &&
-              sectionWords.every((word) => getStage(progress, word.id) >= 2);
-
-            if (!animRefs.current[title]) {
-              animRefs.current[title] = new Animated.Value(1);
-            }
 
             return (
               <View key={title}>
@@ -178,16 +126,6 @@ export default function ExploreListScreen() {
                 >
                   <View style={styles.headerRow}>
                     <Text style={styles.headerText}>{title}</Text>
-                    <TouchableOpacity onPress={() => handleToggleSection(title)}>
-                      <Animated.Text
-                        style={[
-                          styles.tickText,
-                          { transform: [{ scale: animRefs.current[title] }] },
-                        ]}
-                      >
-                        {isFullySelected ? '✗' : '✓'}
-                      </Animated.Text>
-                    </TouchableOpacity>
                   </View>
                 </View>
 
@@ -261,10 +199,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#FFD700',
     textTransform: 'capitalize',
-  },
-  tickText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#FFD700',
   },
 });

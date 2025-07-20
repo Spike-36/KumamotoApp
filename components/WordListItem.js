@@ -1,24 +1,21 @@
-import { Feather } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
 import { useEffect, useState } from 'react';
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { audioMap } from '../components/audioMap';
-import { loadProgress, updateWordStage } from '../utils/progressStorage';
 
 export default function WordListItem({
   word,
   wordStage = 0,
   onPress,
   onUpdateProgress,
-  persist = true, // ⬅️ allows reuse in non-persistent views
+  persist = true, // ⬅️ kept for future reuse
 }) {
   if (!word || typeof word !== 'object') {
     console.warn('Invalid word:', word);
     return null;
   }
 
-  const [isTicking, setIsTicking] = useState(false);
   const [sound, setSound] = useState(null);
 
   useEffect(() => {
@@ -28,44 +25,6 @@ export default function WordListItem({
       }
     };
   }, [sound]);
-
-  const refreshProgress = async () => {
-    const updated = await loadProgress();
-    onUpdateProgress(updated);
-  };
-
-  const handleToggleStage = () => {
-    if (!word?.id || !onUpdateProgress) return;
-
-    const newStage = wordStage >= 1 ? 0 : 2;
-
-    const doUpdate = async () => {
-      setIsTicking(true);
-
-      if (persist) {
-        await updateWordStage(word.id, newStage, true);
-        await refreshProgress();
-      } else {
-        onUpdateProgress(prev => ({ ...prev, [word.id]: newStage }));
-      }
-
-      setIsTicking(false);
-    };
-
-    if (newStage === 0 && persist) {
-      Alert.alert(
-        'Remove tick?',
-        'This will reset progress for this word.',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Yes', onPress: doUpdate },
-        ],
-        { cancelable: true }
-      );
-    } else {
-      doUpdate();
-    }
-  };
 
   const handlePlay = async () => {
     if (!word.audio || !audioMap[word.audio]) {
@@ -87,7 +46,37 @@ export default function WordListItem({
     }
   };
 
-  const tickColor = wordStage >= 2 ? '#00FF00' : 'gray';
+  // const tickColor = wordStage >= 2 ? '#00FF00' : 'gray';
+
+  // const handleToggleStage = () => {
+  //   if (!word?.id || !onUpdateProgress) return;
+
+  //   const newStage = wordStage >= 1 ? 0 : 2;
+
+  //   const doUpdate = async () => {
+  //     if (persist) {
+  //       await updateWordStage(word.id, newStage, true);
+  //       const updated = await loadProgress();
+  //       onUpdateProgress(updated);
+  //     } else {
+  //       onUpdateProgress(prev => ({ ...prev, [word.id]: newStage }));
+  //     }
+  //   };
+
+  //   if (newStage === 0 && persist) {
+  //     Alert.alert(
+  //       'Remove tick?',
+  //       'This will reset progress for this word.',
+  //       [
+  //         { text: 'Cancel', style: 'cancel' },
+  //         { text: 'Yes', onPress: doUpdate },
+  //       ],
+  //       { cancelable: true }
+  //     );
+  //   } else {
+  //     doUpdate();
+  //   }
+  // };
 
   return (
     <View style={styles.item}>
@@ -103,10 +92,10 @@ export default function WordListItem({
         </TouchableOpacity>
       </View>
 
-      {/* Tick */}
-      <TouchableOpacity onPress={handleToggleStage} style={styles.tickButton}>
+      {/* Tick removed for now */}
+      {/* <TouchableOpacity onPress={handleToggleStage} style={styles.tickButton}>
         <Feather name="check-circle" size={26} color={tickColor} />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 }
@@ -127,7 +116,7 @@ const styles = StyleSheet.create({
   },
   english: {
     fontSize: 18,
-    color: '#FFFFFF',  // ⬅️ Pure white
+    color: '#FFFFFF',
     fontWeight: '600',
   },
   japaneseZone: {
