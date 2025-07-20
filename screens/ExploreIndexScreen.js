@@ -1,3 +1,5 @@
+// ExploreIndexScreen.js
+
 import { useNavigation } from '@react-navigation/native';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import blocks from '../data/blocks.json';
@@ -12,7 +14,8 @@ export default function ExploreIndexScreen() {
   const categories = getCategories();
 
   const handleSelect = (type) => {
-    navigation.navigate('ExploreList', { scrollToType: type });
+    // Navigate to the 'List' tab instead of 'ExploreList'
+    navigation.navigate('List', { scrollToType: type });
   };
 
   return (

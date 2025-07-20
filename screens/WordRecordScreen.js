@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { audioMap } from '../components/audioMap';
+import BottomNav from '../components/BottomNav';
 import { imageMap } from '../components/imageMap';
 import WordInteractionBlock from '../components/WordInteractionBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
@@ -169,6 +170,8 @@ export default function WordRecordScreenMVP() {
           />
         </TouchableOpacity>
       </View>
+
+      <BottomNav active={mode} />
     </View>
   );
 }
@@ -222,7 +225,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     paddingBottom: 0,
     position: 'absolute',
-    bottom: 40,
+    bottom: 80, // leave space for BottomNav
     left: 0,
     right: 0,
     zIndex: 10,

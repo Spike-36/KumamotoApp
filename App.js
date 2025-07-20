@@ -1,16 +1,16 @@
-// App.js — Bottom tabs disabled, only ExploreStack shown
-
+import { Entypo, Feather, MaterialIcons } from '@expo/vector-icons';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Audio } from 'expo-av';
 import { useEffect } from 'react';
 
 // Screens
+import ExploreIndexScreen from './screens/ExploreIndexScreen';
+import ExploreListScreen from './screens/ExploreListScreen';
 import ExploreStack from './screens/ExploreStack';
+import WordRecordScreen from './screens/WordRecordScreen';
 
-// Use this instead of bottom tabs (tabs temporarily disabled)
-const Stack = createNativeStackNavigator();
-// const Tab = createBottomTabNavigator(); // Tabs preserved but inactive
+const Tab = createBottomTabNavigator();
 
 export default function App() {
   useEffect(() => {
@@ -29,21 +29,13 @@ export default function App() {
         console.warn('Audio mode setup failed:', err);
       }
     };
-
     configureAudio();
   }, []);
 
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="ExploreStack" component={ExploreStack} />
-      </Stack.Navigator>
-
-      {/*
-      // Original bottom tab structure retained here for future use:
-
       <Tab.Navigator
-        initialRouteName="Explore"
+        initialRouteName="Home"
         screenOptions={{
           headerShown: false,
           tabBarActiveTintColor: '#FFD700',
@@ -58,56 +50,52 @@ export default function App() {
         }}
       >
         <Tab.Screen
-          name="Explore"
+          name="Home"
           component={ExploreStack}
           options={{
-            tabBarLabel: 'Level 1',
+            tabBarLabel: 'Home',
+            tabBarIcon: ({ color, size }) => (
+              <Feather name="home" size={size} color={color} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="List"
+          component={ExploreListScreen}
+          options={{
+            tabBarLabel: 'List',
+            tabBarIcon: ({ color, size }) => (
+              <MaterialIcons name="list" size={size} color={color} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Index"
+          component={ExploreIndexScreen}
+          options={{
+            tabBarLabel: 'Index',
             tabBarIcon: ({ color, size }) => (
               <Entypo name="grid" size={size} color={color} />
             ),
           }}
         />
         <Tab.Screen
-          name="Listen"
-          component={PracticeListenScreen}
+          name="Word"
+          children={() => (
+            <WordRecordScreen
+              words={[]}
+              index={0}
+              mode="word"
+            />
+          )}
           options={{
-            tabBarLabel: 'Level 2',
+            tabBarLabel: 'Word',
             tabBarIcon: ({ color, size }) => (
-              <FontAwesome5 name="headphones" size={size} color={color} />
+              <Feather name="book-open" size={size} color={color} />
             ),
-          }}
-        />
-        <Tab.Screen
-          name="Speak"
-          component={PracticeSpeakScreen}
-          options={{
-            tabBarLabel: 'Level 3',
-            tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="microphone" size={size} color={color} />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Review"
-          component={ReviewStack}
-          options={{
-            tabBarLabel: 'Level 4',
-            tabBarIcon: ({ color, size }) => (
-              <Feather name="check-circle" size={size} color={color} />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Find"
-          component={FindStack}
-          options={{
-            tabBarButton: () => null,
-            tabBarItemStyle: { display: 'none' },
-            tabBarLabel: () => null,
           }}
         />
       </Tab.Navigator>
-      */}
     </NavigationContainer>
   );
 }
