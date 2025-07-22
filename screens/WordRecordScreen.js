@@ -12,7 +12,7 @@ import WordInteractionBlock from '../components/WordInteractionBlock';
 import WordRecordLayout from '../components/WordRecordLayout';
 import { getStage, loadProgress, updateWordStage } from '../utils/progressStorage';
 
-export default function WordRecordScreenMVP() {
+export default function WordRecordScreen() {
   const navigation = useNavigation();
   const route = useRoute();
   const { words, index = 0, mode = 'explore' } = route.params || {};
@@ -28,7 +28,6 @@ export default function WordRecordScreenMVP() {
   const word = words[index];
   const wordId = word?.id;
   const [progress, setProgress] = useState({});
-  const [showEnglish, setShowEnglish] = useState(false);
   const [showTip, setShowTip] = useState(false);
 
   const soundRef = useRef(null);
@@ -97,19 +96,13 @@ export default function WordRecordScreenMVP() {
   };
 
   const goToPrev = () => {
-    if (index > 0) {
-      navigation.push('WordRecord', { words, index: index - 1, mode });
-    }
+    const prevIndex = (index - 1 + words.length) % words.length;
+    navigation.push('WordRecord', { words, index: prevIndex, mode });
   };
 
   const goToNext = () => {
-    if (index < words.length - 1) {
-      navigation.push('WordRecord', { words, index: index + 1, mode });
-    }
-  };
-
-  const goHome = () => {
-    navigation.navigate('ExploreIndex');
+    const nextIndex = (index + 1) % words.length;
+    navigation.push('WordRecord', { words, index: nextIndex, mode });
   };
 
   return (
@@ -117,19 +110,13 @@ export default function WordRecordScreenMVP() {
       <StatusBar style="light" translucent backgroundColor="transparent" />
 
       <View style={styles.topHalf}>
-        <TouchableOpacity onPress={goHome} style={styles.homeButton}>
-          <Feather name="home" size={28} color="#FFD700" />
-        </TouchableOpacity>
-
         <WordRecordLayout
           block={word}
           imageAsset={imageMap[word.image]}
           showImage
           showTipIcon
           showInfoIcon
-          showEnglish={showEnglish}
           onPlayAudio={playAudio}
-          onToggleEnglish={() => setShowEnglish(!showEnglish)}
           onShowTip={() => setShowTip(true)}
         />
       </View>
@@ -153,19 +140,19 @@ export default function WordRecordScreenMVP() {
       )}
 
       <View style={styles.navButtons}>
-        <TouchableOpacity onPress={goToPrev} disabled={index === 0}>
+        <TouchableOpacity onPress={goToPrev}>
           <Feather
             name="chevron-left"
             size={48}
-            color={index === 0 ? 'gray' : '#888'}
+            color="#888"
             style={{ transform: [{ scaleX: 1 }, { scaleY: 1.4 }] }}
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={goToNext} disabled={index >= words.length - 1}>
+        <TouchableOpacity onPress={goToNext}>
           <Feather
             name="chevron-right"
             size={48}
-            color={index >= words.length - 1 ? 'gray' : '#888'}
+            color="#888"
             style={{ transform: [{ scaleX: 1 }, { scaleY: 1.4 }] }}
           />
         </TouchableOpacity>
@@ -185,12 +172,6 @@ const styles = StyleSheet.create({
   topHalf: {
     height: '58%',
     position: 'relative',
-  },
-  homeButton: {
-    position: 'absolute',
-    top: 40,
-    right: 20,
-    zIndex: 20,
   },
   interactionBlock: {
     height: '42%',
@@ -225,7 +206,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     paddingBottom: 0,
     position: 'absolute',
-    bottom: 80, // leave space for BottomNav
+    bottom: 40,
     left: 0,
     right: 0,
     zIndex: 10,

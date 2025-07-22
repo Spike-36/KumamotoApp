@@ -28,19 +28,18 @@ export default function WordInteractionBlock({
   instructionText = '',
   showStars = true,
   showInstruction = true,
-  showPhonetic = true, // ✅ NEW PROP
   style = {},
 }) {
   return (
     <View style={[styles.container, style]}>
       {showStars && renderStars(stage, onStageChange)}
 
-      {showPhonetic && (  // ✅ CONDITIONAL RENDER
-        <Text style={styles.phonetic}>{block?.phonetic}</Text>
-      )}
+      {/* 🔸 GOLD Japanese */}
+      <Text style={styles.foreignGold}>{block?.foreign}</Text>
 
+      {/* 🔸 WHITE English — tappable for audio */}
       <TouchableOpacity onPress={onPlayAudio}>
-        <Text style={styles.foreign}>{block?.foreign}</Text>
+        <Text style={styles.foreignWhite}>{block?.english}</Text>
       </TouchableOpacity>
 
       {showInstruction && instructionText ? (
@@ -64,13 +63,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 16,
   },
-  phonetic: {
-    color: '#FFD700',
-    fontSize: 30,
+  foreignGold: {
+    color: '#FFD700', // gold
+    fontSize: 28,
     textAlign: 'center',
-    marginBottom: 25,
+    marginBottom: 10,
   },
-  foreign: {
+  foreignWhite: {
     color: 'white',
     fontSize: 40,
     textAlign: 'center',

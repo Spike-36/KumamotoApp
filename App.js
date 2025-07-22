@@ -6,9 +6,9 @@ import { useEffect } from 'react';
 
 // Screens
 import ExploreIndexScreen from './screens/ExploreIndexScreen';
-import ExploreListScreen from './screens/ExploreListScreen';
-import ExploreStack from './screens/ExploreStack';
-import WordRecordScreen from './screens/WordRecordScreen';
+import ExploreStack from './screens/ExploreStack'; // ✅ replaces direct List screen
+import HomeScreen from './screens/HomeScreen';
+import WordStack from './screens/WordStack'; // ✅ stack with WordRecordScreen
 
 const Tab = createBottomTabNavigator();
 
@@ -44,28 +44,16 @@ export default function App() {
             backgroundColor: 'black',
             borderTopColor: '#222',
           },
-          tabBarLabelStyle: {
-            fontSize: 12,
-          },
+          tabBarLabelStyle: { fontSize: 12 },
         }}
       >
         <Tab.Screen
           name="Home"
-          component={ExploreStack}
+          component={HomeScreen}
           options={{
             tabBarLabel: 'Home',
             tabBarIcon: ({ color, size }) => (
               <Feather name="home" size={size} color={color} />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="List"
-          component={ExploreListScreen}
-          options={{
-            tabBarLabel: 'List',
-            tabBarIcon: ({ color, size }) => (
-              <MaterialIcons name="list" size={size} color={color} />
             ),
           }}
         />
@@ -80,14 +68,18 @@ export default function App() {
           }}
         />
         <Tab.Screen
+          name="List"
+          component={ExploreStack} // ✅ now uses stack
+          options={{
+            tabBarLabel: 'List',
+            tabBarIcon: ({ color, size }) => (
+              <MaterialIcons name="list" size={size} color={color} />
+            ),
+          }}
+        />
+        <Tab.Screen
           name="Word"
-          children={() => (
-            <WordRecordScreen
-              words={[]}
-              index={0}
-              mode="word"
-            />
-          )}
+          component={WordStack}
           options={{
             tabBarLabel: 'Word',
             tabBarIcon: ({ color, size }) => (
